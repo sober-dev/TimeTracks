@@ -7,6 +7,20 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
 
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".NewTaskActivity" />
+
+        <provider
+            android:name=".provider.TaskProvider"
+            android:authorities="ua.com.sober.timetracks.provider.ContractClass"
+            android:exported="false" />
+
     </application>
 
 </manifest>

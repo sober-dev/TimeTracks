@@ -1,3 +1,28 @@
 <resources>
+
     <string name="app_name">Time Tracks</string>
+
+    <string name="empty_name">Name cannot be empty</string>
+
+    <!-- Rename dialog -->
+    <string name="rename_dialog_title">Rename task</string>
+    <string name="rename_dialog_name_hint">new name</string>
+    <string name="rename_dialog_positive_btn">OK</string>
+    <string name="rename_dialog_negative_btn">Cancel</string>
+
+    <!-- List item -->
+    <string name="item_btn_start">Start</string>
+    <string name="item_btn_stop">Stop</string>
+    <string name="item_run_status">Runs</string>
+
+    <!-- Add new task -->
+    <string name="add_btn">Add</string>
+    <string name="enter_name_hint">Enter task name</string>
+
+    <!-- Item dialog -->
+    <string-array name="dialog_items">
+        <item>Rename task</item>
+        <item>Delete task</item>
+    </string-array>
+
 </resources>
