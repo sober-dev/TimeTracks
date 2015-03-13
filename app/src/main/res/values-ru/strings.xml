@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Time Tracks</string>
+
+    <string name="empty_name">Имя не может быть пустым</string>
+
+    <!-- Rename dialog -->
+    <string name="rename_dialog_title">Переименовать задачу</string>
+    <string name="rename_dialog_name_hint">новое имя</string>
+    <string name="rename_dialog_negative_btn">Отмена</string>
+    <string name="rename_dialog_positive_btn">OK</string>
+
+    <!-- List item -->
+    <string name="item_btn_start">Старт</string>
+    <string name="item_btn_stop">Стоп</string>
+    <string name="item_run_status">Выполняется </string>
+
+    <!-- Add new task -->
+    <string name="add_btn">Добавить</string>
+    <string name="enter_name_hint">Введите имя задачи</string>
+
+    <!-- Item dialog -->
+    <string-array name="dialog_items">
+        <item>Переименовать задачу</item>
+        <item>Удалить задачу</item>
+    </string-array>
+
+</resources>
