@@ -4,13 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.*;
 
 import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.provider.ContractClass;
-import ua.com.sober.timetracks.util.TaskTrack;
 import ua.com.sober.timetracks.util.TimeConversion;
 
 /**
@@ -21,9 +19,10 @@ public class DataAdapter extends CursorAdapter {
 
     public static class ViewHolder {
         public long taskID;
+        public long status;
+        public long totalTime;
         public TextView tvTaskName;
         public TextView tvTotalTime;
-        public Button btnStartOrStop;
     }
 
     public DataAdapter(Context context, Cursor cursor, int flags) {
@@ -38,10 +37,8 @@ public class DataAdapter extends CursorAdapter {
         ViewHolder holder = new ViewHolder();
         TextView tvTaskName = (TextView) view.findViewById(R.id.tvTaskName);
         TextView tvTotalTime = (TextView) view.findViewById(R.id.tvTotalTime);
-        Button btnStartOrStop = (Button) view.findViewById(R.id.btnStartOrStop);
         holder.tvTaskName = tvTaskName;
         holder.tvTotalTime = tvTotalTime;
-        holder.btnStartOrStop = btnStartOrStop;
         view.setTag(holder);
 
         return view;
@@ -49,50 +46,23 @@ public class DataAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        long taskID = cursor.getLong(cursor.getColumnIndex(ContractClass.Tasks._ID));
         String taskName = cursor.getString(cursor.getColumnIndex(ContractClass.Tasks.COLUMN_NAME_TASK_NAME));
+        long taskID = cursor.getLong(cursor.getColumnIndex(ContractClass.Tasks._ID));
         long status = cursor.getLong(cursor.getColumnIndex(ContractClass.Tasks.COLUMN_NAME_STATUS));
         long totalTime = cursor.getLong(cursor.getColumnIndex(ContractClass.Tasks.COLUMN_NAME_TOTAL_TIME));
 
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder != null) {
             holder.taskID = taskID;
+            holder.status = status;
+            holder.totalTime = totalTime;
             holder.tvTaskName.setText(taskName);
             if (status == 0) {
-                holder.btnStartOrStop.setText(R.string.item_btn_start);
                 holder.tvTotalTime.setText(TimeConversion.getTimeStringFromMilliseconds(totalTime));
             } else {
-                holder.btnStartOrStop.setText(R.string.item_btn_stop);
                 holder.tvTotalTime.setText(R.string.item_run_status);
             }
-            holder.btnStartOrStop.setOnClickListener(new OnBtnClickListener(context, taskID, status, totalTime));
         }
-    }
-
-    private class OnBtnClickListener implements OnClickListener {
-        private Context context;
-        private long taskID;
-        private long status;
-        private long totalTime;
-
-        public OnBtnClickListener(Context context, long taskID, long status, long totalTime) {
-            super();
-            this.context = context;
-            this.taskID = taskID;
-            this.status = status;
-            this.totalTime = totalTime;
-        }
-
-        @Override
-        public void onClick(View v) {
-            TaskTrack track = new TaskTrack(context, taskID, status, totalTime);
-            if (status == 0) {
-                track.StartTrack();
-            } else {
-                track.StopTrack();
-            }
-        }
-
     }
 
 }

@@ -18,6 +18,7 @@ import com.melnykov.fab.FloatingActionButton;
 import ua.com.sober.timetracks.adapter.DataAdapter;
 import ua.com.sober.timetracks.adapter.DataAdapter.ViewHolder;
 import ua.com.sober.timetracks.provider.ContractClass;
+import ua.com.sober.timetracks.util.TaskTrack;
 
 /**
  * Created by dmitry.hmel on 13.03.2015.
@@ -53,6 +54,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
         dataAdapter = new DataAdapter(this, null, 0);
         lvItems.setAdapter(dataAdapter);
+        lvItems.setOnItemClickListener(this);
         lvItems.setOnItemLongClickListener(this);
         getLoaderManager().initLoader(0, null, this);
 
@@ -81,7 +83,24 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        long taskID;
+        long status;
+        long totalTime;
+        ViewHolder holder = (ViewHolder) view.getTag();
+        if (holder != null) {
+            taskID = holder.taskID;
+            status = holder.status;
+            totalTime = holder.totalTime;
+        } else {
+            return;
+        }
 
+        TaskTrack track = new TaskTrack(MainActivity.this, taskID, status, totalTime);
+        if (status == 0) {
+            track.StartTrack();
+        } else {
+            track.StopTrack();
+        }
     }
 
     @Override
