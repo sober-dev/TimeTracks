@@ -18,7 +18,7 @@ import java.util.HashMap;
  */
 public class TaskProvider extends ContentProvider {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static HashMap<String, String> sTaskProjectionMap;
     private static HashMap<String, String> sTaskTracksProjectionMap;
     private static final int TASKS = 1;

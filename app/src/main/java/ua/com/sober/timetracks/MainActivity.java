@@ -97,9 +97,9 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
         TaskTrack track = new TaskTrack(MainActivity.this, taskID, status, totalTime);
         if (status == 0) {
-            track.StartTrack();
+            track.startTrack();
         } else {
-            track.StopTrack();
+            track.stopTrack();
         }
     }
 
