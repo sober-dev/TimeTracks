@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 
 import ua.com.sober.timetracks.provider.ContractClass;
 
@@ -43,7 +42,7 @@ public class TaskTrack {
         trackUri = context.getContentResolver().insert(TaskTracks.CONTENT_URI, cv);
         trackID = ContentUris.parseId(trackUri);
         setStatus(taskID, trackID);
-        Log.w("SQLite", "startTrack, result Uri : " + trackUri.toString());
+//        Log.w("SQLite", "startTrack, result Uri : " + trackUri.toString());
     }
 
     private void stopPreviosTrack() {
@@ -59,11 +58,14 @@ public class TaskTrack {
             cursor.close();
             if (stopTime == 0) {
                 trackStopTime = System.currentTimeMillis();
+
+//                Update stopTime
                 trackUri = ContentUris.withAppendedId(TaskTracks.CONTENT_URI, trackID);
                 ContentValues cv = new ContentValues();
                 cv.put(ContractClass.TaskTracks.COLUMN_NAME_STOP_TIME, trackStopTime);
                 context.getContentResolver().update(trackUri, cv, null, null);
 
+//                Update status and totalTime
                 taskUri = ContentUris.withAppendedId(Tasks.CONTENT_URI, taskID);
                 ContentValues cvTask = new ContentValues();
                 cvTask.put(Tasks.COLUMN_NAME_STATUS, status);
@@ -74,10 +76,8 @@ public class TaskTrack {
                 totalTime = totalTime + trackStopTime;
                 cvTask.put(Tasks.COLUMN_NAME_TOTAL_TIME, totalTime);
                 context.getContentResolver().update(taskUri, cvTask, null, null);
-
-                Log.w("SQLite", "stopTrack, result Uri : " + trackUri.toString());
+//                Log.w("SQLite", "stopTrack, result Uri : " + trackUri.toString());
             }
-            Log.w("SQLite", "trackID: " + trackID + ", taskID: " + taskID + ", stopTime: " + stopTime);
         } else cursor.close();
     }
 
@@ -88,7 +88,7 @@ public class TaskTrack {
         cv.put(ContractClass.TaskTracks.COLUMN_NAME_STOP_TIME, trackStopTime);
         context.getContentResolver().update(trackUri, cv, null, null);
         setStatus(taskID, 0);
-        Log.w("SQLite", "stopTrack, result Uri : " + trackUri.toString());
+//        Log.w("SQLite", "stopTrack, result Uri : " + trackUri.toString());
     }
 
     private void setStatus(long taskID, long status) {

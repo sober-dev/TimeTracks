@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -157,7 +156,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                     ContentValues cv = new ContentValues();
                     cv.put(ContractClass.Tasks.COLUMN_NAME_TASK_NAME, inputName);
                     getContentResolver().update(uri, cv, null, null);
-                    Log.w("SQLite", "Task renamed, result Uri : " + uri.toString());
+//                    Log.w("SQLite", "Task renamed, result Uri : " + uri.toString());
                 }
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
@@ -181,7 +180,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     private void deleteTask(long taskID) {
         Uri uri = ContentUris.withAppendedId(ContractClass.Tasks.CONTENT_URI, taskID);
         getContentResolver().delete(uri, null, null);
-        Log.w("SQLite", "Task delete, result Uri: " + uri.toString());
+//        Log.w("SQLite", "Task delete, result Uri: " + uri.toString());
     }
 
 }

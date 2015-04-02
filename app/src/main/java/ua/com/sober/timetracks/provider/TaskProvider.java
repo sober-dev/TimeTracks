@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.BaseColumns;
-import android.util.Log;
 import java.util.HashMap;
 
 /**
@@ -82,7 +81,7 @@ public class TaskProvider extends ContentProvider {
                 orderBy = ContractClass.TaskTracks.DEFAULT_SORT_ORDER;
                 break;
             default:
-                Log.w("test", "Error!!!");
+//                Log.w("test", "Error!!!");
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -278,27 +277,21 @@ public class TaskProvider extends ContentProvider {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_TABLE_SCRIPT);
+//            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_TABLE_SCRIPT);
             db.execSQL(DATABASE_CREATE_TASK_TABLE_SCRIPT);
-            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_TRACKS_TABLE_SCRIPT);
+//            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_TRACKS_TABLE_SCRIPT);
             db.execSQL(DATABASE_CREATE_TASK_TRACKS_TABLE_SCRIPT);
-            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_ID_INDEX_SCRIPT);
+//            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_ID_INDEX_SCRIPT);
             db.execSQL(DATABASE_CREATE_TASK_ID_INDEX_SCRIPT);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w("SQLite", "Updated with version " + oldVersion + " to version " + newVersion);
+//            Log.w("SQLite", "Updated with version " + oldVersion + " to version " + newVersion);
             db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TASKS_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TASK_TRACKS_TABLE);
             onCreate(db);
         }
-
-//    @Override
-//    public void onOpen(SQLiteDatabase db) {
-//        super.onOpen(db);
-//        db.execSQL("PRAGMA foreign_keys = ON;");
-//    }
 
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
@@ -306,6 +299,12 @@ public class TaskProvider extends ContentProvider {
             super.onConfigure(db);
             db.setForeignKeyConstraintsEnabled(true);
         }
+
+//        @Override
+//        public void onOpen(SQLiteDatabase db) {
+//            super.onOpen(db);
+//            db.execSQL("PRAGMA foreign_keys = ON;");
+//        }
 
     }
 

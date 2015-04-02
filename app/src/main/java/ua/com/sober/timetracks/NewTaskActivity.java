@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -66,7 +65,7 @@ public class NewTaskActivity extends ActionBarActivity {
             cv.put(ContractClass.Tasks.COLUMN_NAME_TOTAL_TIME, 0);
             Uri newUri = getContentResolver().insert(ContractClass.Tasks.CONTENT_URI, cv);
             back();
-            Log.w("SQLite", "Task insert, result Uri : " + newUri.toString());
+//            Log.w("SQLite", "Task insert, result Uri : " + newUri.toString());
         }
     }
 
