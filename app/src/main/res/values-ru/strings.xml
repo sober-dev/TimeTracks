@@ -5,6 +5,9 @@
 
     <string name="empty_name">Имя не может быть пустым</string>
 
+    <!-- Menu -->
+    <string name="item_statistic">Статистика</string>
+
     <!-- Rename dialog -->
     <string name="rename_dialog_title">Переименовать задачу</string>
     <string name="rename_dialog_name_hint">новое имя</string>
