@@ -2,7 +2,9 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+        <!-- Color palette -->
+        <item name="colorPrimaryDark">@color/primary_pressed</item>
+        <item name="colorPrimary">@color/primary</item>
     </style>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
