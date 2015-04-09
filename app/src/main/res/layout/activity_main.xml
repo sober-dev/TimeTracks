@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,7 +14,8 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        android:transitionName="actionBar" />
+        app:popupTheme="@style/AppTheme"
+        app:theme="@style/Toolbar" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -32,7 +34,7 @@
             android:layout_margin="16dp"
             android:src="@drawable/ic_add_white_24dp"
             fab:fab_colorNormal="@color/primary"
-            fab:fab_colorPressed="@color/primary_pressed" />
+            fab:fab_colorPressed="@color/primary_dark" />
     </FrameLayout>
 
 </LinearLayout>
