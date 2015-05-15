@@ -42,7 +42,7 @@ public class NewTaskActivity extends ActionBarActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                back();
+                backToMain();
             }
         });
     }
@@ -50,7 +50,7 @@ public class NewTaskActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
-        back();
+        backToMain();
     }
 
     private void addTask() {
@@ -64,12 +64,12 @@ public class NewTaskActivity extends ActionBarActivity {
             cv.put(ContractClass.Tasks.COLUMN_NAME_TASK_NAME, taskName);
             cv.put(ContractClass.Tasks.COLUMN_NAME_TOTAL_TIME, 0);
             Uri newUri = getContentResolver().insert(ContractClass.Tasks.CONTENT_URI, cv);
-            back();
+            backToMain();
 //            Log.w("SQLite", "Task insert, result Uri : " + newUri.toString());
         }
     }
 
-    private void back() {
+    private void backToMain() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);

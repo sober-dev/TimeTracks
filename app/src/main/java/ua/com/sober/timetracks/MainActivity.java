@@ -71,8 +71,10 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.statistic:
-                Intent intent = new Intent(this, StatisticActivity.class);
+                Intent intent = new Intent(getApplicationContext(), StatisticActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
+                finish();
                 return true;
         }
 

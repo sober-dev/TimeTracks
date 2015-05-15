@@ -1,11 +1,14 @@
 package ua.com.sober.timetracks;
 
-import android.graphics.Color;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +23,7 @@ import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.PieChartView;
+import ua.com.sober.timetracks.provider.ContractClass;
 
 /**
  * Created by dmitry.hmel on 18.03.2015.
@@ -33,10 +37,30 @@ public class StatisticActivity extends ActionBarActivity {
 //        Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.statisticToolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                backToMain();
+            }
+        });
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        backToMain();
+    }
+
+    private void backToMain() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+        finish();
     }
 
     /**
@@ -71,16 +95,36 @@ public class StatisticActivity extends ActionBarActivity {
             return rootView;
         }
 
-        private void generateData() {
-            int numValues = 6;
-
+        private List<SliceValue> getData() {
+            Long totalTime;
+            String sortOrder = ContractClass.Tasks.COLUMN_NAME_TOTAL_TIME + " ASC";
+            Context context = this.getActivity().getApplicationContext();
+            Cursor cursor = context.getContentResolver().query(ContractClass.Tasks.CONTENT_URI, null, null, null, sortOrder);
+            cursor.moveToFirst();
             List<SliceValue> values = new ArrayList<>();
-            for (int i = 0; i < numValues; ++i) {
-                SliceValue sliceValue = new SliceValue((float) i, -16711936);
+            while (!cursor.isAfterLast()) {
+                totalTime = cursor.getLong(cursor.getColumnIndex(ContractClass.Tasks.COLUMN_NAME_TOTAL_TIME));
+                if (totalTime < 0) {
+                    totalTime = totalTime + System.currentTimeMillis();
+                }
+                SliceValue sliceValue = new SliceValue((float) totalTime, ChartUtils.pickColor());
                 values.add(sliceValue);
+                cursor.moveToNext();
             }
+            cursor.close();
+            return values;
+        }
 
-            data = new PieChartData(values);
+        private void generateData() {
+//            int numValues = 6;
+//
+//            List<SliceValue> values = new ArrayList<>();
+//            for (int i = 0; i < numValues; ++i) {
+//                SliceValue sliceValue = new SliceValue((float) Math.random() * 30 + 15, ChartUtils.pickColor());
+//                values.add(sliceValue);
+//            }
+
+            data = new PieChartData(getData());
             data.setHasLabels(hasLabels);
             data.setHasLabelsOnlyForSelected(hasLabelForSelected);
             data.setHasLabelsOutside(hasLabelsOutside);
