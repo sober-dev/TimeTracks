@@ -17,7 +17,7 @@
     <!-- List item -->
     <string name="item_btn_start">Старт</string>
     <string name="item_btn_stop">Стоп</string>
-    <string name="item_run_status">Выполняется </string>
+    <string name="item_run_status">Выполняется</string>
 
     <!-- Add new task -->
     <string name="add_btn">Добавить</string>

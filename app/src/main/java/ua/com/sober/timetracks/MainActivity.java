@@ -107,16 +107,18 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         long taskID;
         long status;
         long totalTime;
+        String taskName;
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder != null) {
             taskID = holder.taskID;
             status = holder.status;
             totalTime = holder.totalTime;
+            taskName = holder.taskName;
         } else {
             return;
         }
 
-        TaskTrack track = new TaskTrack(MainActivity.this, taskID, status, totalTime);
+        TaskTrack track = new TaskTrack(MainActivity.this, taskID, status, totalTime, taskName);
         if (status == 0) {
             track.startTrack();
         } else {

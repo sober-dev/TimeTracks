@@ -21,6 +21,7 @@ public class DataAdapter extends CursorAdapter {
         public long taskID;
         public long status;
         public long totalTime;
+        public String taskName;
         public TextView tvTaskName;
         public TextView tvTotalTime;
     }
@@ -56,6 +57,7 @@ public class DataAdapter extends CursorAdapter {
             holder.taskID = taskID;
             holder.status = status;
             holder.totalTime = totalTime;
+            holder.taskName = taskName;
             holder.tvTaskName.setText(taskName);
             if (status == 0) {
                 holder.tvTotalTime.setText(TimeConversion.getTimeStringFromMilliseconds(totalTime));
