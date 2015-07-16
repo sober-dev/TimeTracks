@@ -1,6 +1,5 @@
 package ua.com.sober.timetracks.util;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,12 +8,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
-import android.view.View;
 
-import ua.com.sober.timetracks.MainActivity;
+import ua.com.sober.timetracks.Activity.MainActivity;
 import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.provider.ContractClass;
 

@@ -1,8 +1,7 @@
-package ua.com.sober.timetracks;
+package ua.com.sober.timetracks.Activity;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
-import android.app.TaskStackBuilder;
 import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.*;
 import com.melnykov.fab.FloatingActionButton;
 
+import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.adapter.DataAdapter;
 import ua.com.sober.timetracks.adapter.DataAdapter.ViewHolder;
 import ua.com.sober.timetracks.provider.ContractClass;
@@ -34,18 +34,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (isTaskRoot()) {
-//            // Started from a Notification and the app is not running, restart the app with back stack
-//            // Here create a launch Intent which includes the back stack
-//            Intent intent = new Intent(this, MainActivity.class);
-//            // Copy extras from incoming Intent
-//            intent.putExtras(getIntent());
-//            // Now launch this activity again and immediately return
-//            TaskStackBuilder.create(this)
-//                    .addNextIntentWithParentStack(intent)
-//                    .startActivities();
-//            return;
-//        }
         setContentView(R.layout.activity_main);
         lvItems = (ListView) findViewById(R.id.lvItems);
 
