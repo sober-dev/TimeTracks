@@ -10,7 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 
-import ua.com.sober.timetracks.Activity.MainActivity;
+import ua.com.sober.timetracks.activity.MainActivity;
 import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.provider.ContractClass;
 

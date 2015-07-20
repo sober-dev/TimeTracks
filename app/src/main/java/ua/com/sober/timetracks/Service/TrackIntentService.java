@@ -1,8 +1,9 @@
-package ua.com.sober.timetracks.Service;
+package ua.com.sober.timetracks.service;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.util.Log;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -11,15 +12,15 @@ import android.content.Context;
  * TODO: Customize class - update intent actions, extra parameters and static
  * helper methods.
  */
-public class TrackService extends IntentService {
+public class TrackIntentService extends IntentService {
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "ua.com.sober.timetracks.Service.action.FOO";
-    private static final String ACTION_BAZ = "ua.com.sober.timetracks.Service.action.BAZ";
+    private static final String ACTION_FOO = "ua.com.sober.timetracks.service.action.FOO";
+    private static final String ACTION_BAZ = "ua.com.sober.timetracks.service.action.BAZ";
 
     // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "ua.com.sober.timetracks.Service.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "ua.com.sober.timetracks.Service.extra.PARAM2";
+    private static final String EXTRA_PARAM1 = "ua.com.sober.timetracks.service.extra.PARAM1";
+    private static final String EXTRA_PARAM2 = "ua.com.sober.timetracks.service.extra.PARAM2";
 
     /**
      * Starts this service to perform action Foo with the given parameters. If
@@ -29,7 +30,7 @@ public class TrackService extends IntentService {
      */
     // TODO: Customize helper method
     public static void startActionFoo(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, TrackService.class);
+        Intent intent = new Intent(context, TrackIntentService.class);
         intent.setAction(ACTION_FOO);
         intent.putExtra(EXTRA_PARAM1, param1);
         intent.putExtra(EXTRA_PARAM2, param2);
@@ -44,19 +45,26 @@ public class TrackService extends IntentService {
      */
     // TODO: Customize helper method
     public static void startActionBaz(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, TrackService.class);
+        Intent intent = new Intent(context, TrackIntentService.class);
         intent.setAction(ACTION_BAZ);
         intent.putExtra(EXTRA_PARAM1, param1);
         intent.putExtra(EXTRA_PARAM2, param2);
         context.startService(intent);
     }
 
-    public TrackService() {
-        super("TrackService");
+    public TrackIntentService() {
+        super("TrackIntentService");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.i("TS", "onCreate method");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.i("TS", "onHandleIntent method");
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_FOO.equals(action)) {
@@ -71,13 +79,20 @@ public class TrackService extends IntentService {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("TS", "onDestroy method");
+    }
+
     /**
      * Handle action Foo in the provided background thread with the provided
      * parameters.
      */
     private void handleActionFoo(String param1, String param2) {
         // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
+//        throw new UnsupportedOperationException("Not yet implemented");
+        Log.i("TS", "run action with p1: " + param1 + "and p2: " + param2);
     }
 
     /**
@@ -86,6 +101,7 @@ public class TrackService extends IntentService {
      */
     private void handleActionBaz(String param1, String param2) {
         // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+//        throw new UnsupportedOperationException("Not yet implemented");
+        Log.i("TS", "run action with p1: " + param1 + "and p2: " + param2);
     }
 }

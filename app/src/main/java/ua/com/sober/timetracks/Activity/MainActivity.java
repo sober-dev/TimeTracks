@@ -1,4 +1,4 @@
-package ua.com.sober.timetracks.Activity;
+package ua.com.sober.timetracks.activity;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
@@ -14,18 +14,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.*;
+
 import com.melnykov.fab.FloatingActionButton;
 
 import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.adapter.DataAdapter;
 import ua.com.sober.timetracks.adapter.DataAdapter.ViewHolder;
 import ua.com.sober.timetracks.provider.ContractClass;
+import ua.com.sober.timetracks.service.TrackIntentService;
 import ua.com.sober.timetracks.util.TaskTrack;
 
 /**
  * Created by dmitry.hmel on 13.03.2015.
  */
-public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener ,AdapterView.OnItemLongClickListener {
+public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     private ListView lvItems;
     private FloatingActionButton fab;
@@ -59,7 +61,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         lvItems.setOnItemClickListener(this);
         lvItems.setOnItemLongClickListener(this);
         getLoaderManager().initLoader(0, null, this);
-
     }
 
     @Override
@@ -122,8 +123,12 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         TaskTrack track = new TaskTrack(MainActivity.this, taskID, status, totalTime, taskName);
         if (status == 0) {
             track.startTrack();
+//            Test Service
+            TrackIntentService.startActionBaz(getApplicationContext(), "Baz_p1", "Baz_p2");
         } else {
             track.stopTrack();
+//            Test Service
+            TrackIntentService.startActionBaz(getApplicationContext(), "Foo_p1", "Foo_p2");
         }
     }
 
