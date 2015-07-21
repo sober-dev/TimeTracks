@@ -10,7 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 
-import ua.com.sober.timetracks.Activity.MainActivity;
+import ua.com.sober.timetracks.activity.MainActivity;
 import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.provider.ContractClass;
 
@@ -122,7 +122,6 @@ public class TaskTrack {
     private void showNotification() {
         Notification.Builder builder = new Notification.Builder(context);
         Intent intent = new Intent(context, MainActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         builder
                 .setContentIntent(pendingIntent)

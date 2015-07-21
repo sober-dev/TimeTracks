@@ -1,4 +1,4 @@
-package ua.com.sober.timetracks.Activity;
+package ua.com.sober.timetracks.activity;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
