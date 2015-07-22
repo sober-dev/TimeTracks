@@ -119,7 +119,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             return;
         }
 
-        TaskTrack track = new TaskTrack(MainActivity.this, taskID, status, totalTime, taskName);
+        TaskTrack track = new TaskTrack(getApplicationContext(), taskID, status, totalTime, taskName);
         if (status == 0) {
             track.startTrack();
         } else {

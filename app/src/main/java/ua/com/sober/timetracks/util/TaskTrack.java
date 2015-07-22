@@ -1,8 +1,5 @@
 package ua.com.sober.timetracks.util;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,9 +7,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 
-import ua.com.sober.timetracks.activity.MainActivity;
-import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.provider.ContractClass;
+import ua.com.sober.timetracks.service.TimeTracksService;
 
 import static ua.com.sober.timetracks.provider.ContractClass.TaskTracks;
 import static ua.com.sober.timetracks.provider.ContractClass.Tasks;
@@ -32,8 +28,6 @@ public class TaskTrack {
     private Uri trackUri;
     private Uri taskUri;
     private Cursor cursor;
-    private NotificationManager notificationManager;
-    private final int NOTIFICATION_ID = 0;
 
     public TaskTrack(Context context, long taskID, long status, long totalTime, String taskName) {
         this.context = context;
@@ -41,7 +35,6 @@ public class TaskTrack {
         this.status = status;
         this.totalTime = totalTime;
         this.taskName = taskName;
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     public void startTrack() {
@@ -120,22 +113,16 @@ public class TaskTrack {
     }
 
     private void showNotification() {
-        Notification.Builder builder = new Notification.Builder(context);
-        Intent intent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        builder
-                .setContentIntent(pendingIntent)
-                .setOngoing(true)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(taskName)
-                .setContentText("Runs");
-
-        Notification notification = builder.build();
-
-        notificationManager.notify(NOTIFICATION_ID, notification);
+        Intent startIntent = new Intent(context, TimeTracksService.class);
+        startIntent.setAction(TimeTracksService.ACTION_STARTFOREGROUND);
+        startIntent.putExtra("taskName", taskName);
+        context.startService(startIntent);
     }
 
     private void cancelNotification() {
-        notificationManager.cancel(NOTIFICATION_ID);
+        Intent stopIntent = new Intent(context, TimeTracksService.class);
+        stopIntent.setAction(TimeTracksService.ACTION_STOPFOREGROUND);
+        context.startService(stopIntent);
+        context.stopService(new Intent(context, TimeTracksService.class));
     }
 }
