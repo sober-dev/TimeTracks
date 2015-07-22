@@ -21,7 +21,6 @@ import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.adapter.DataAdapter;
 import ua.com.sober.timetracks.adapter.DataAdapter.ViewHolder;
 import ua.com.sober.timetracks.provider.ContractClass;
-import ua.com.sober.timetracks.service.TrackIntentService;
 import ua.com.sober.timetracks.util.TaskTrack;
 
 /**
@@ -123,12 +122,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         TaskTrack track = new TaskTrack(MainActivity.this, taskID, status, totalTime, taskName);
         if (status == 0) {
             track.startTrack();
-//            Test Service
-            TrackIntentService.startActionBaz(getApplicationContext(), "Baz_p1", "Baz_p2");
         } else {
             track.stopTrack();
-//            Test Service
-            TrackIntentService.startActionBaz(getApplicationContext(), "Foo_p1", "Foo_p2");
         }
     }
 

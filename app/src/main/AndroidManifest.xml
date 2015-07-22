@@ -25,14 +25,9 @@
             android:exported="false" />
 
         <service
-<<<<<<< HEAD
             android:name=".service.TimeTracksService"
             android:enabled="true"
             android:exported="true" >
-=======
-            android:name=".service.TrackIntentService"
-            android:exported="false" >
->>>>>>> 200e10d6692dbd3ae028b917b150a5fbb9a1dcf8
         </service>
     </application>
 
