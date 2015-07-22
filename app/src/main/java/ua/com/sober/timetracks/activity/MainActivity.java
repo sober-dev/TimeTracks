@@ -1,4 +1,4 @@
-package ua.com.sober.timetracks;
+package ua.com.sober.timetracks.activity;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
@@ -17,6 +17,7 @@ import android.widget.*;
 
 import com.melnykov.fab.FloatingActionButton;
 
+import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.adapter.DataAdapter;
 import ua.com.sober.timetracks.adapter.DataAdapter.ViewHolder;
 import ua.com.sober.timetracks.provider.ContractClass;

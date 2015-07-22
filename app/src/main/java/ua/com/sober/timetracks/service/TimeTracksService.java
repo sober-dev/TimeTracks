@@ -1,4 +1,4 @@
-package ua.com.sober.timetracks;
+package ua.com.sober.timetracks.service;
 
 import android.app.Service;
 import android.content.Intent;

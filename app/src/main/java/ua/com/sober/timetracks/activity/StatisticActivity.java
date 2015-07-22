@@ -1,4 +1,4 @@
-package ua.com.sober.timetracks;
+package ua.com.sober.timetracks.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +22,7 @@ import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.PieChartView;
+import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.provider.ContractClass;
 
 /**
