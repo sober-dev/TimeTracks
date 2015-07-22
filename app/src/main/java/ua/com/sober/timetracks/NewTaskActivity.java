@@ -1,4 +1,4 @@
-package ua.com.sober.timetracks.activity;
+package ua.com.sober.timetracks;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.provider.ContractClass;
 
 /**
