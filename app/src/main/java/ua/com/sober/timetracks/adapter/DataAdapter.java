@@ -60,7 +60,11 @@ public class DataAdapter extends CursorAdapter {
             holder.taskName = taskName;
             holder.tvTaskName.setText(taskName);
             if (status == 0) {
-                holder.tvTotalTime.setText(TimeConversion.getTimeStringFromMilliseconds(totalTime));
+                if (totalTime < 60000) {
+                    holder.tvTotalTime.setText(TimeConversion.getTimeStringFromMilliseconds(totalTime, TimeConversion.HMS));
+                } else {
+                    holder.tvTotalTime.setText(TimeConversion.getTimeStringFromMilliseconds(totalTime, TimeConversion.HM));
+                }
             } else {
                 holder.tvTotalTime.setText(R.string.item_run_status);
             }

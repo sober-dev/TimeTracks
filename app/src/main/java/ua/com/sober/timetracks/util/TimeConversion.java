@@ -4,7 +4,10 @@ package ua.com.sober.timetracks.util;
  * Created by dmitry.hmel on 12.03.2015.
  */
 public class TimeConversion {
-    public static String getTimeStringFromMilliseconds(long milliseconds) {
+    public static final String HMS = "hms";
+    public static final String HM = "hm";
+
+    public static String getTimeStringFromMilliseconds(long milliseconds, String timeFormat) {
         String seconds = Integer.toString(getSecondsFromMilliseconds(milliseconds));
         String minutes = Integer.toString(getMinutesFromMilliseconds(milliseconds));
         String hours = Integer.toString(getHoursFromMilliseconds(milliseconds));
@@ -19,7 +22,11 @@ public class TimeConversion {
                 hours = "0" + hours;
             }
         }
-        return hours + ":" + minutes + ":" + seconds;
+        if (timeFormat.equals(HM)) {
+            return hours + "h:" + minutes + "m";
+        } else {
+            return hours + "h:" + minutes + "m:" + seconds + "s";
+        }
     }
 
     public static int getHoursFromMilliseconds(long milliseconds) {
@@ -36,5 +43,4 @@ public class TimeConversion {
         long time = milliseconds / 1000;
         return (int) (time % 60);
     }
-
 }
