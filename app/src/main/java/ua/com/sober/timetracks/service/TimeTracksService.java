@@ -27,6 +27,22 @@ public class TimeTracksService extends Service {
     private static final String LOG_TAG = "TimeTracksService";
     public static final String ACTION_STARTFOREGROUND = "ua.com.sober.timetracks.service.action.STARTFOREGROUND";
     public static final String ACTION_STOPFOREGROUND = "ua.com.sober.timetracks.service.action.STOPFOREGROUND";
+    private static final String ACTION_START_TRACK = "ua.com.sober.timetracks.service.action.STARTTRACK";
+    private static final String ACTION_STOP_TRACK = "ua.com.sober.timetracks.service.action.STOPTRACK";
+
+    public static void startTrack(Context context, long taskID, long status, long totalTime, String taskName) {
+        Intent intent = new Intent(context, TimeTracksService.class);
+        intent.setAction(ACTION_START_TRACK);
+//        intent.putExtra()
+        context.startService(intent);
+    }
+
+    public static void stopTrack(Context context, long taskID, long status, long totalTime, String taskName) {
+        Intent intent = new Intent(context, TimeTracksService.class);
+        intent.setAction(ACTION_STOP_TRACK);
+//        intent.putExtra()
+        context.startService(intent);
+    }
 
     @Override
     public void onCreate() {
