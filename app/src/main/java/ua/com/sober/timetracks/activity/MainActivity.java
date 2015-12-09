@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
@@ -21,29 +22,26 @@ import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.adapter.DataAdapter;
 import ua.com.sober.timetracks.adapter.DataAdapter.ViewHolder;
 import ua.com.sober.timetracks.provider.ContractClass;
-import ua.com.sober.timetracks.util.TaskTrack;
+import ua.com.sober.timetracks.service.TimeTracksService;
 
 /**
  * Created by dmitry.hmel on 13.03.2015.
  */
-public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
-
-    private ListView lvItems;
-    private FloatingActionButton fab;
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private DataAdapter dataAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        lvItems = (ListView) findViewById(R.id.lvItems);
+        ListView lvItems = (ListView) findViewById(R.id.lvItems);
 
 //        Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
 
 //        Add FloatingActionButton
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToListView(lvItems);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,25 +104,17 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         long taskID;
-        long status;
-        long totalTime;
-        String taskName;
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder != null) {
             taskID = holder.taskID;
-            status = holder.status;
-            totalTime = holder.totalTime;
-            taskName = holder.taskName;
         } else {
             return;
         }
-
-        TaskTrack track = new TaskTrack(getApplicationContext(), taskID, status, totalTime, taskName);
-        if (status == 0) {
-            track.startTrack();
-        } else {
-            track.stopTrack();
-        }
+//        Start service
+        Intent intent = new Intent(getApplicationContext(), TimeTracksService.class);
+        intent.setAction(TimeTracksService.ACTION_START_OR_STOP_TRACK);
+        intent.putExtra("taskID", taskID);
+        getApplicationContext().startService(intent);
     }
 
     @Override

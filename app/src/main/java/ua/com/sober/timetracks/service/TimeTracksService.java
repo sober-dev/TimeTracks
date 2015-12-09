@@ -4,69 +4,61 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.IBinder;
-import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.activity.MainActivity;
+import ua.com.sober.timetracks.provider.ContractClass;
 import ua.com.sober.timetracks.util.TimeConversion;
 
 public class TimeTracksService extends Service {
+    public static final String ACTION_START_OR_STOP_TRACK = "ua.com.sober.timetracks.service.action.START_OR_STOP_TRACK";
+
+    private static final int NOTIFICATION_ID = 1;
+
     private Context context;
-    private String taskName;
-    private long runTime = 0;
     private NotificationManager notificationManager;
     private Notification.Builder builder;
     private Timer timer;
-    private static final int NOTIFICATION_ID = 1;
-    private static final String LOG_TAG = "TimeTracksService";
-    public static final String ACTION_STARTFOREGROUND = "ua.com.sober.timetracks.service.action.STARTFOREGROUND";
-    public static final String ACTION_STOPFOREGROUND = "ua.com.sober.timetracks.service.action.STOPFOREGROUND";
-    private static final String ACTION_START_TRACK = "ua.com.sober.timetracks.service.action.STARTTRACK";
-    private static final String ACTION_STOP_TRACK = "ua.com.sober.timetracks.service.action.STOPTRACK";
 
-    public static void startTrack(Context context, long taskID, long status, long totalTime, String taskName) {
-        Intent intent = new Intent(context, TimeTracksService.class);
-        intent.setAction(ACTION_START_TRACK);
-//        intent.putExtra()
-        context.startService(intent);
-    }
-
-    public static void stopTrack(Context context, long taskID, long status, long totalTime, String taskName) {
-        Intent intent = new Intent(context, TimeTracksService.class);
-        intent.setAction(ACTION_STOP_TRACK);
-//        intent.putExtra()
-        context.startService(intent);
-    }
+    private String taskName;
+    private long taskID = -1;
+    private long trackStartTime;
 
     @Override
     public void onCreate() {
-        Log.d(LOG_TAG, "onCreate service method");
         context = getApplicationContext();
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        builder = new Notification.Builder(context);
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getAction().equals(ACTION_STARTFOREGROUND)) {
-            taskName = intent.getStringExtra("taskName");
-            Log.d(LOG_TAG, "ACTION_STARTFOREGROUND");
-//            Start Foreground and show notification
-            builder = new Notification.Builder(context);
-            startForeground(NOTIFICATION_ID, getNotifacation(runTime));
-            updateNotification();
-        } else if (intent.getAction().equals(ACTION_STOPFOREGROUND)) {
-            Log.d(LOG_TAG, "ACTION_STOPFOREGROUND");
-//            Stop Foreground and clear notification
-            timer.cancel();
-            stopForeground(true);
-            runTime = 0;
+        if (intent.getAction().equals(ACTION_START_OR_STOP_TRACK)) {
+            long taskID = intent.getLongExtra("taskID", -2);
+
+            if (this.taskID == -1) {
+                this.taskID = taskID;
+                startTrack();
+            } else if (this.taskID == taskID) {
+                stopTrack();
+                this.taskID = -1;
+            } else if (taskID != -2) {
+                stopTrack();
+                this.taskID = taskID;
+                startTrack();
+            }
+
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -79,11 +71,42 @@ public class TimeTracksService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.d(LOG_TAG, "onDestroy service method");
+        if (timer != null) {
+            timer.cancel();
+        }
         super.onDestroy();
     }
 
-    private Notification getNotifacation(long runTime) {
+    private void startTrack() {
+        trackStartTime = System.currentTimeMillis();
+//        Get taskName
+        Uri taskUri = ContentUris.withAppendedId(ContractClass.Tasks.CONTENT_URI, taskID);
+        Cursor cursor = context.getContentResolver().query(taskUri, null, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            taskName = cursor.getString(cursor.getColumnIndex(ContractClass.Tasks.COLUMN_NAME_TASK_NAME));
+            cursor.close();
+        }
+//        Start Foreground and show notification        
+        startForeground(NOTIFICATION_ID, getNotifacation());
+        updateNotification();
+    }
+
+    private void stopTrack() {
+        if (getTrackRunTime() > 60000) {
+            long trackStopTime = System.currentTimeMillis();
+            ContentValues cv = new ContentValues();
+            cv.put(ContractClass.TaskTracks.COLUMN_NAME_TASK_ID, taskID);
+            cv.put(ContractClass.TaskTracks.COLUMN_NAME_START_TIME, trackStartTime);
+            cv.put(ContractClass.TaskTracks.COLUMN_NAME_STOP_TIME, trackStopTime);
+            context.getContentResolver().insert(ContractClass.TaskTracks.CONTENT_URI, cv);
+        }
+//            Stop Foreground and clear notification
+        timer.cancel();
+        stopForeground(true);
+    }
+
+    private Notification getNotifacation() {
 //        Create notification
         Intent intentMainActivity = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intentMainActivity, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -91,40 +114,32 @@ public class TimeTracksService extends Service {
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(taskName)
-                .setContentText(TimeConversion.getTimeStringFromMilliseconds(runTime, TimeConversion.HMS))
-                .addAction(R.mipmap.ic_launcher, "Action1", pendingIntent)
-                .addAction(R.mipmap.ic_launcher, "Action2", pendingIntent);
+                .setContentText(TimeConversion.getTimeStringFromMilliseconds(getTrackRunTime(), TimeConversion.HMS))
+//                .addAction(R.mipmap.ic_launcher, "Action1", pendingIntent)
+//                .addAction(R.mipmap.ic_launcher, "Action2", pendingIntent)
+        ;
         return builder.build();
     }
 
     private void updateNotification() {
-        if (runTime < 60000) {
-            timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if (runTime < 60000) {
-                        Log.d(LOG_TAG, "runTime: " + runTime);
-                        builder.setContentText(TimeConversion.getTimeStringFromMilliseconds(runTime, TimeConversion.HMS));
-                        notificationManager.notify(NOTIFICATION_ID, builder.build());
-                        runTime = runTime + 1000;
-                    } else {
-                        timer.cancel();
-                        updateNotification();
-                    }
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                String runTime;
+                if (getTrackRunTime() < 60000) {
+                    runTime = TimeConversion.getTimeStringFromMilliseconds(getTrackRunTime(), TimeConversion.HMS);
+                } else {
+                    runTime = TimeConversion.getTimeStringFromMilliseconds(getTrackRunTime(), TimeConversion.HM);
                 }
-            }, 0, 1000);
-        } else {
-            timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    Log.d(LOG_TAG, "runTime: " + runTime);
-                    builder.setContentText(TimeConversion.getTimeStringFromMilliseconds(runTime, TimeConversion.HM));
-                    notificationManager.notify(NOTIFICATION_ID, builder.build());
-                    runTime = runTime + 60000;
-                }
-            }, 0, 60000);
-        }
+                builder.setContentText(runTime);
+                notificationManager.notify(NOTIFICATION_ID, builder.build());
+            }
+        }, 0, 1000);
     }
+
+    private long getTrackRunTime() {
+        return System.currentTimeMillis() - trackStartTime;
+    }
+
 }

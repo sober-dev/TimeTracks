@@ -23,13 +23,9 @@ public final class ContractClass {
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.ua.com.sober.timetracks.provider.ContractClass.tasks";
         public static final String DEFAULT_SORT_ORDER = "_id DESC";
         public static final String COLUMN_NAME_TASK_NAME   = "task_name";
-        public static final String COLUMN_NAME_STATUS = "status";
-        public static final String COLUMN_NAME_TOTAL_TIME   = "total_time";
         public static final String[] DEFAULT_PROJECTION = new String[] {
                 ContractClass.Tasks._ID,
                 ContractClass.Tasks.COLUMN_NAME_TASK_NAME,
-                ContractClass.Tasks.COLUMN_NAME_STATUS,
-                ContractClass.Tasks.COLUMN_NAME_TOTAL_TIME
         };
     }
 

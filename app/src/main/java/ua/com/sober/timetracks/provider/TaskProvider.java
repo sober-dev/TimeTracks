@@ -3,13 +3,14 @@ package ua.com.sober.timetracks.provider;
 import android.annotation.TargetApi;
 import android.content.*;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
+
 import java.util.HashMap;
 
 /**
@@ -54,7 +55,7 @@ public class TaskProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         String orderBy = null;
         switch (sUriMatcher.match(uri)) {
@@ -95,7 +96,7 @@ public class TaskProvider extends ContentProvider {
         return c;    }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         switch (sUriMatcher.match(uri)) {
             case TASKS:
                 return ContractClass.Tasks.CONTENT_TYPE;
@@ -111,7 +112,7 @@ public class TaskProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues initialValues) {
+    public Uri insert(@NonNull Uri uri, ContentValues initialValues) {
         if (sUriMatcher.match(uri) != TASKS && sUriMatcher.match(uri) != TASK_TRACKS) {
             throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -127,14 +128,8 @@ public class TaskProvider extends ContentProvider {
         Uri rowUri = Uri.EMPTY;
         switch (sUriMatcher.match(uri)) {
             case TASKS:
-                if (values.containsKey(ContractClass.Tasks.COLUMN_NAME_TASK_NAME) == false) {
+                if (!values.containsKey(ContractClass.Tasks.COLUMN_NAME_TASK_NAME)) {
                     values.put(ContractClass.Tasks.COLUMN_NAME_TASK_NAME, "");
-                }
-                if (values.containsKey(ContractClass.Tasks.COLUMN_NAME_STATUS) == false) {
-                    values.put(ContractClass.Tasks.COLUMN_NAME_STATUS, 0);
-                }
-                if (values.containsKey(ContractClass.Tasks.COLUMN_NAME_TOTAL_TIME) == false) {
-                    values.put(ContractClass.Tasks.COLUMN_NAME_TOTAL_TIME, 0);
                 }
                 rowId = db.insert(ContractClass.Tasks.TABLE_NAME,
                         null,
@@ -145,13 +140,13 @@ public class TaskProvider extends ContentProvider {
                 }
                 break;
             case TASK_TRACKS:
-                if (values.containsKey(ContractClass.TaskTracks.COLUMN_NAME_TASK_ID) == false) {
+                if (!values.containsKey(ContractClass.TaskTracks.COLUMN_NAME_TASK_ID)) {
                     values.put(ContractClass.TaskTracks.COLUMN_NAME_TASK_ID, -1);
                 }
-                if (values.containsKey(ContractClass.TaskTracks.COLUMN_NAME_START_TIME) == false) {
+                if (!values.containsKey(ContractClass.TaskTracks.COLUMN_NAME_START_TIME)) {
                     values.put(ContractClass.TaskTracks.COLUMN_NAME_START_TIME, 0);
                 }
-                if (values.containsKey(ContractClass.TaskTracks.COLUMN_NAME_STOP_TIME) == false) {
+                if (!values.containsKey(ContractClass.TaskTracks.COLUMN_NAME_STOP_TIME)) {
                     values.put(ContractClass.TaskTracks.COLUMN_NAME_STOP_TIME, 0);
                 }
                 rowId = db.insert(ContractClass.TaskTracks.TABLE_NAME,
@@ -167,7 +162,7 @@ public class TaskProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         String finalWhere;
         int count;
@@ -200,7 +195,7 @@ public class TaskProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int count;
         String finalWhere;
@@ -241,8 +236,6 @@ public class TaskProvider extends ContentProvider {
 
         public static final String DATABASE_TASKS_TABLE = "tasks";
         public static final String TASK_NAME_COLUMN = "task_name";
-        public static final String TOTAL_TIME_COLUMN = "total_time";
-        public static final String STATUS_COLUMN = "status";
 
         public static final String DATABASE_TASK_TRACKS_TABLE = "task_tracks";
         public static final String TASK_ID_COLUMN = "task_id";
@@ -254,8 +247,7 @@ public class TaskProvider extends ContentProvider {
                 "create table " + DATABASE_TASKS_TABLE + " ("
                         + BaseColumns._ID + " integer primary key autoincrement, "
                         + TASK_NAME_COLUMN + " text not null, "
-                        + STATUS_COLUMN + " integer, "
-                        + TOTAL_TIME_COLUMN + " integer, unique(" + TASK_NAME_COLUMN + ") on conflict replace);";
+                        + "unique(" + TASK_NAME_COLUMN + ") on conflict replace);";
 
         private static final String DATABASE_CREATE_TASK_TRACKS_TABLE_SCRIPT =
                 "create table " + DATABASE_TASK_TRACKS_TABLE + " ("
@@ -270,14 +262,6 @@ public class TaskProvider extends ContentProvider {
 
         public DatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
-
-        public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-            super(context, name, factory, version);
-        }
-
-        public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
-            super(context, name, factory, version, errorHandler);
         }
 
         @Override

@@ -95,36 +95,16 @@ public class StatisticActivity extends ActionBarActivity {
             return rootView;
         }
 
-        private List<SliceValue> getData() {
-            Long totalTime;
-            String sortOrder = ContractClass.Tasks.COLUMN_NAME_TOTAL_TIME + " ASC";
-            Context context = this.getActivity().getApplicationContext();
-            Cursor cursor = context.getContentResolver().query(ContractClass.Tasks.CONTENT_URI, null, null, null, sortOrder);
-            cursor.moveToFirst();
-            List<SliceValue> values = new ArrayList<>();
-            while (!cursor.isAfterLast()) {
-                totalTime = cursor.getLong(cursor.getColumnIndex(ContractClass.Tasks.COLUMN_NAME_TOTAL_TIME));
-                if (totalTime < 0) {
-                    totalTime = totalTime + System.currentTimeMillis();
-                }
-                SliceValue sliceValue = new SliceValue((float) totalTime, ChartUtils.pickColor());
-                values.add(sliceValue);
-                cursor.moveToNext();
-            }
-            cursor.close();
-            return values;
-        }
-
         private void generateData() {
-//            int numValues = 6;
-//
-//            List<SliceValue> values = new ArrayList<>();
-//            for (int i = 0; i < numValues; ++i) {
-//                SliceValue sliceValue = new SliceValue((float) Math.random() * 30 + 15, ChartUtils.pickColor());
-//                values.add(sliceValue);
-//            }
+            int numValues = 6;
 
-            data = new PieChartData(getData());
+            List<SliceValue> values = new ArrayList<>();
+            for (int i = 0; i < numValues; ++i) {
+                SliceValue sliceValue = new SliceValue((float) Math.random() * 30 + 15, ChartUtils.pickColor());
+                values.add(sliceValue);
+            }
+
+            data = new PieChartData(values);
             data.setHasLabels(hasLabels);
             data.setHasLabelsOnlyForSelected(hasLabelForSelected);
             data.setHasLabelsOutside(hasLabelsOutside);

@@ -63,7 +63,6 @@ public class NewTaskActivity extends ActionBarActivity {
         } else {
             ContentValues cv = new ContentValues();
             cv.put(ContractClass.Tasks.COLUMN_NAME_TASK_NAME, taskName);
-            cv.put(ContractClass.Tasks.COLUMN_NAME_TOTAL_TIME, 0);
             Uri newUri = getContentResolver().insert(ContractClass.Tasks.CONTENT_URI, cv);
             backToMain();
 //            Log.w("SQLite", "Task insert, result Uri : " + newUri.toString());
