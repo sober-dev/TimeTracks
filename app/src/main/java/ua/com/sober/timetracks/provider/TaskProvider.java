@@ -1,15 +1,14 @@
 package ua.com.sober.timetracks.provider;
 
-import android.annotation.TargetApi;
 import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.HashMap;
 
@@ -34,14 +33,14 @@ public class TaskProvider extends ContentProvider {
         sUriMatcher.addURI(ContractClass.AUTHORITY, "tasks/#", TASKS_ID);
         sUriMatcher.addURI(ContractClass.AUTHORITY, "task_tracks", TASK_TRACKS);
         sUriMatcher.addURI(ContractClass.AUTHORITY, "task_tracks/#", TASK_TRACKS_ID);
-        sTaskProjectionMap = new HashMap<String, String>();
-        for(int i=0; i < ContractClass.Tasks.DEFAULT_PROJECTION.length; i++) {
+        sTaskProjectionMap = new HashMap<>();
+        for (int i = 0; i < ContractClass.Tasks.DEFAULT_PROJECTION.length; i++) {
             sTaskProjectionMap.put(
                     ContractClass.Tasks.DEFAULT_PROJECTION[i],
                     ContractClass.Tasks.DEFAULT_PROJECTION[i]);
         }
-        sTaskTracksProjectionMap = new HashMap<String, String>();
-        for(int i=0; i < ContractClass.TaskTracks.DEFAULT_PROJECTION.length; i++) {
+        sTaskTracksProjectionMap = new HashMap<>();
+        for (int i = 0; i < ContractClass.TaskTracks.DEFAULT_PROJECTION.length; i++) {
             sTaskTracksProjectionMap.put(
                     ContractClass.TaskTracks.DEFAULT_PROJECTION[i],
                     ContractClass.TaskTracks.DEFAULT_PROJECTION[i]);
@@ -57,7 +56,7 @@ public class TaskProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        String orderBy = null;
+        String orderBy;
         switch (sUriMatcher.match(uri)) {
             case TASKS:
                 qb.setTables(ContractClass.Tasks.TABLE_NAME);
@@ -82,7 +81,6 @@ public class TaskProvider extends ContentProvider {
                 orderBy = ContractClass.TaskTracks.DEFAULT_SORT_ORDER;
                 break;
             default:
-//                Log.w("test", "Error!!!");
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -93,7 +91,8 @@ public class TaskProvider extends ContentProvider {
             c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
         }
         c.setNotificationUri(getContext().getContentResolver(), uri);
-        return c;    }
+        return c;
+    }
 
     @Override
     public String getType(@NonNull Uri uri) {
@@ -120,11 +119,10 @@ public class TaskProvider extends ContentProvider {
         ContentValues values;
         if (initialValues != null) {
             values = new ContentValues(initialValues);
-        }
-        else {
+        } else {
             values = new ContentValues();
         }
-        long rowId = -1;
+        long rowId;
         Uri rowUri = Uri.EMPTY;
         switch (sUriMatcher.match(uri)) {
             case TASKS:
@@ -168,24 +166,24 @@ public class TaskProvider extends ContentProvider {
         int count;
         switch (sUriMatcher.match(uri)) {
             case TASKS:
-                count = db.delete(ContractClass.Tasks.TABLE_NAME,selection,selectionArgs);
+                count = db.delete(ContractClass.Tasks.TABLE_NAME, selection, selectionArgs);
                 break;
             case TASKS_ID:
                 finalWhere = ContractClass.Tasks._ID + " = " + uri.getPathSegments().get(ContractClass.Tasks.TASKS_ID_PATH_POSITION);
                 if (selection != null) {
                     finalWhere = finalWhere + " AND " + selection;
                 }
-                count = db.delete(ContractClass.Tasks.TABLE_NAME,finalWhere,selectionArgs);
+                count = db.delete(ContractClass.Tasks.TABLE_NAME, finalWhere, selectionArgs);
                 break;
             case TASK_TRACKS:
-                count = db.delete(ContractClass.TaskTracks.TABLE_NAME,selection,selectionArgs);
+                count = db.delete(ContractClass.TaskTracks.TABLE_NAME, selection, selectionArgs);
                 break;
             case TASK_TRACKS_ID:
                 finalWhere = ContractClass.TaskTracks._ID + " = " + uri.getPathSegments().get(ContractClass.TaskTracks.TASK_TRACKS_ID_PATH_POSITION);
                 if (selection != null) {
                     finalWhere = finalWhere + " AND " + selection;
                 }
-                count = db.delete(ContractClass.TaskTracks.TABLE_NAME,finalWhere,selectionArgs);
+                count = db.delete(ContractClass.TaskTracks.TABLE_NAME, finalWhere, selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
@@ -207,7 +205,7 @@ public class TaskProvider extends ContentProvider {
             case TASKS_ID:
                 id = uri.getPathSegments().get(ContractClass.Tasks.TASKS_ID_PATH_POSITION);
                 finalWhere = ContractClass.Tasks._ID + " = " + id;
-                if (selection !=null) {
+                if (selection != null) {
                     finalWhere = finalWhere + " AND " + selection;
                 }
                 count = db.update(ContractClass.Tasks.TABLE_NAME, values, finalWhere, selectionArgs);
@@ -218,7 +216,7 @@ public class TaskProvider extends ContentProvider {
             case TASK_TRACKS_ID:
                 id = uri.getPathSegments().get(ContractClass.TaskTracks.TASK_TRACKS_ID_PATH_POSITION);
                 finalWhere = ContractClass.TaskTracks._ID + " = " + id;
-                if (selection !=null) {
+                if (selection != null) {
                     finalWhere = finalWhere + " AND " + selection;
                 }
                 count = db.update(ContractClass.TaskTracks.TABLE_NAME, values, finalWhere, selectionArgs);
@@ -232,8 +230,6 @@ public class TaskProvider extends ContentProvider {
 
     private static class DatabaseHelper extends SQLiteOpenHelper implements BaseColumns {
 
-        private static final String DATABASE_NAME = "timetracks.db";
-
         public static final String DATABASE_TASKS_TABLE = "tasks";
         public static final String TASK_NAME_COLUMN = "task_name";
 
@@ -242,6 +238,8 @@ public class TaskProvider extends ContentProvider {
         public static final String START_TIME_COLUMN = "start_time";
         public static final String STOP_TIME_COLUMN = "stop_time";
         public static final String TASK_ID_INDEX = "task_id_index";
+
+        private static final String DATABASE_NAME = "timetracks.db";
 
         private static final String DATABASE_CREATE_TASK_TABLE_SCRIPT =
                 "create table " + DATABASE_TASKS_TABLE + " ("
@@ -255,7 +253,7 @@ public class TaskProvider extends ContentProvider {
                         + TASK_ID_COLUMN + " integer not null, "
                         + START_TIME_COLUMN + " integer, "
                         + STOP_TIME_COLUMN + " integer, "
-                        + "foreign key (" + TASK_ID_COLUMN + ") references " + DATABASE_TASKS_TABLE + "(" + BaseColumns._ID + ") " +"on delete cascade);";
+                        + "foreign key (" + TASK_ID_COLUMN + ") references " + DATABASE_TASKS_TABLE + "(" + BaseColumns._ID + ") " + "on delete cascade);";
 
         private static final String DATABASE_CREATE_TASK_ID_INDEX_SCRIPT =
                 "create index " + TASK_ID_INDEX + " on " + DATABASE_TASK_TRACKS_TABLE + "(" + TASK_ID_COLUMN + ");";
@@ -266,34 +264,27 @@ public class TaskProvider extends ContentProvider {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-//            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_TABLE_SCRIPT);
+            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_TABLE_SCRIPT);
             db.execSQL(DATABASE_CREATE_TASK_TABLE_SCRIPT);
-//            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_TRACKS_TABLE_SCRIPT);
+            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_TRACKS_TABLE_SCRIPT);
             db.execSQL(DATABASE_CREATE_TASK_TRACKS_TABLE_SCRIPT);
-//            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_ID_INDEX_SCRIPT);
+            Log.w("SQLite", "Script: " + DATABASE_CREATE_TASK_ID_INDEX_SCRIPT);
             db.execSQL(DATABASE_CREATE_TASK_ID_INDEX_SCRIPT);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//            Log.w("SQLite", "Updated with version " + oldVersion + " to version " + newVersion);
+            Log.w("SQLite", "Updated with version " + oldVersion + " to version " + newVersion);
             db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TASKS_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TASK_TRACKS_TABLE);
             onCreate(db);
         }
 
-        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void onConfigure(SQLiteDatabase db) {
-            super.onConfigure(db);
+            Log.w("SQLite", "Enable foreign key support");
             db.setForeignKeyConstraintsEnabled(true);
         }
-
-//        @Override
-//        public void onOpen(SQLiteDatabase db) {
-//            super.onOpen(db);
-//            db.execSQL("PRAGMA foreign_keys = ON;");
-//        }
 
     }
 
