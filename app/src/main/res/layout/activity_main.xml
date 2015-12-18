@@ -17,6 +17,12 @@
         app:popupTheme="@style/AppTheme"
         app:theme="@style/Toolbar" />
 
+    <LinearLayout
+        android:id="@+id/activeTaskLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

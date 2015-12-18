@@ -6,7 +6,6 @@ import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -18,9 +17,12 @@ import android.widget.*;
 
 import com.melnykov.fab.FloatingActionButton;
 
+import de.greenrobot.event.EventBus;
 import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.adapter.DataAdapter;
 import ua.com.sober.timetracks.adapter.DataAdapter.ViewHolder;
+import ua.com.sober.timetracks.event.TrackRunEvent;
+import ua.com.sober.timetracks.event.TrackStopEvent;
 import ua.com.sober.timetracks.provider.ContractClass;
 import ua.com.sober.timetracks.service.TimeTracksService;
 
@@ -30,35 +32,7 @@ import ua.com.sober.timetracks.service.TimeTracksService;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private DataAdapter dataAdapter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ListView lvItems = (ListView) findViewById(R.id.lvItems);
-
-//        Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.mainToolbar);
-        setSupportActionBar(toolbar);
-
-//        Add FloatingActionButton
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.attachToListView(lvItems);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), NewTaskActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        dataAdapter = new DataAdapter(this, null, 0);
-        lvItems.setAdapter(dataAdapter);
-        lvItems.setOnItemClickListener(this);
-        lvItems.setOnItemLongClickListener(this);
-        getLoaderManager().initLoader(0, null, this);
-    }
+    private LinearLayout activeTaskLinearLayout;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -148,6 +122,79 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         builder.show();
 
         return true;
+    }
+
+    public void onEventMainThread(TrackRunEvent event) {
+        activeTaskLinearLayout.removeAllViews();
+
+        int sizeInDp = 10;
+        float scale = getResources().getDisplayMetrics().density;
+        int dpAsPixels = (int) (sizeInDp*scale + 0.5f);
+
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setPadding(dpAsPixels, dpAsPixels, dpAsPixels, dpAsPixels);
+
+        TextView taskName = new TextView(this);
+        TextView trackRunTime = new TextView(this);
+        taskName.setText(event.taskName);
+        trackRunTime.setText(event.trackRunTime);
+        linearLayout.addView(taskName);
+        linearLayout.addView(trackRunTime);
+
+        Button buttonStop = new Button(this);
+        buttonStop.setPadding(dpAsPixels, dpAsPixels, dpAsPixels, dpAsPixels);
+        buttonStop.setText("STOP");
+
+        activeTaskLinearLayout.addView(linearLayout);
+        activeTaskLinearLayout.addView(buttonStop);
+    }
+
+    public void onEventMainThread(TrackStopEvent event) {
+        activeTaskLinearLayout.removeAllViews();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ListView lvItems = (ListView) findViewById(R.id.lvItems);
+        activeTaskLinearLayout = (LinearLayout) findViewById(R.id.activeTaskLinearLayout);
+
+//        Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.mainToolbar);
+        setSupportActionBar(toolbar);
+
+//        Add FloatingActionButton
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.attachToListView(lvItems);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), NewTaskActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        dataAdapter = new DataAdapter(this, null, 0);
+        lvItems.setAdapter(dataAdapter);
+        lvItems.setOnItemClickListener(this);
+        lvItems.setOnItemLongClickListener(this);
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     private void renameTask(long taskID) {

@@ -15,8 +15,11 @@ import android.os.IBinder;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import de.greenrobot.event.EventBus;
 import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.activity.MainActivity;
+import ua.com.sober.timetracks.event.TrackRunEvent;
+import ua.com.sober.timetracks.event.TrackStopEvent;
 import ua.com.sober.timetracks.provider.ContractClass;
 import ua.com.sober.timetracks.util.TimeConversion;
 
@@ -79,7 +82,8 @@ public class TimeTracksService extends Service {
 
     private void startTrack() {
         trackStartTime = System.currentTimeMillis();
-//        Get taskName
+
+//        Get taskName from DB
         Uri taskUri = ContentUris.withAppendedId(ContractClass.Tasks.CONTENT_URI, taskID);
         Cursor cursor = context.getContentResolver().query(taskUri, null, null, null, null);
         if (cursor != null) {
@@ -87,12 +91,17 @@ public class TimeTracksService extends Service {
             taskName = cursor.getString(cursor.getColumnIndex(ContractClass.Tasks.COLUMN_NAME_TASK_NAME));
             cursor.close();
         }
+
 //        Start Foreground and show notification        
         startForeground(NOTIFICATION_ID, getNotifacation());
         updateNotification();
     }
 
     private void stopTrack() {
+//        Send TrackStopEvent to MainActivity
+        EventBus.getDefault().post(new TrackStopEvent());
+
+//        Save track in DB
         if (getTrackRunTime() > 60000) {
             long trackStopTime = System.currentTimeMillis();
             ContentValues cv = new ContentValues();
@@ -101,6 +110,7 @@ public class TimeTracksService extends Service {
             cv.put(ContractClass.TaskTracks.COLUMN_NAME_STOP_TIME, trackStopTime);
             context.getContentResolver().insert(ContractClass.TaskTracks.CONTENT_URI, cv);
         }
+
 //            Stop Foreground and clear notification
         timer.cancel();
         stopForeground(true);
@@ -129,9 +139,14 @@ public class TimeTracksService extends Service {
                 String runTime;
                 if (getTrackRunTime() < 60000) {
                     runTime = TimeConversion.getTimeStringFromMilliseconds(getTrackRunTime(), TimeConversion.HMS);
+
                 } else {
                     runTime = TimeConversion.getTimeStringFromMilliseconds(getTrackRunTime(), TimeConversion.HM);
                 }
+
+//                Send TrackRunEvent to MainActivity
+                EventBus.getDefault().post(new TrackRunEvent(taskName, runTime));
+
                 builder.setContentText(runTime);
                 notificationManager.notify(NOTIFICATION_ID, builder.build());
             }
