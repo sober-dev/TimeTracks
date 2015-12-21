@@ -63,7 +63,7 @@ public class TimeTracksService extends Service {
             }
 
         }
-        return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 
     @Override
