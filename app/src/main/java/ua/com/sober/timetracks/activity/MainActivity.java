@@ -124,34 +124,28 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return true;
     }
 
-    public void onEventMainThread(TrackRunEvent event) {
-        activeTaskLinearLayout.removeAllViews();
-
-        int sizeInDp = 10;
-        float scale = getResources().getDisplayMetrics().density;
-        int dpAsPixels = (int) (sizeInDp*scale + 0.5f);
-
-        LinearLayout linearLayout = new LinearLayout(this);
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.setPadding(dpAsPixels, dpAsPixels, dpAsPixels, dpAsPixels);
-
-        TextView taskName = new TextView(this);
-        TextView trackRunTime = new TextView(this);
+    public void onEventMainThread(final TrackRunEvent event) {
+        TextView taskName = (TextView) findViewById(R.id.tvActiveTaskName);
+        TextView trackRunTime = (TextView) findViewById(R.id.tvActiveTrackRunTime);
         taskName.setText(event.taskName);
         trackRunTime.setText(event.trackRunTime);
-        linearLayout.addView(taskName);
-        linearLayout.addView(trackRunTime);
+        activeTaskLinearLayout.setVisibility(View.VISIBLE);
+        activeTaskLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                long taskID = event.taskID;
 
-        Button buttonStop = new Button(this);
-        buttonStop.setPadding(dpAsPixels, dpAsPixels, dpAsPixels, dpAsPixels);
-        buttonStop.setText("STOP");
-
-        activeTaskLinearLayout.addView(linearLayout);
-        activeTaskLinearLayout.addView(buttonStop);
+//                Stop active service
+                Intent intent = new Intent(getApplicationContext(), TimeTracksService.class);
+                intent.setAction(TimeTracksService.ACTION_START_OR_STOP_TRACK);
+                intent.putExtra("taskID", taskID);
+                getApplicationContext().startService(intent);
+            }
+        });
     }
 
     public void onEventMainThread(TrackStopEvent event) {
-        activeTaskLinearLayout.removeAllViews();
+        activeTaskLinearLayout.setVisibility(View.GONE);
     }
 
     @Override

@@ -145,7 +145,7 @@ public class TimeTracksService extends Service {
                 }
 
 //                Send TrackRunEvent to MainActivity
-                EventBus.getDefault().post(new TrackRunEvent(taskName, runTime));
+                EventBus.getDefault().post(new TrackRunEvent(taskID, taskName, runTime));
 
                 builder.setContentText(runTime);
                 notificationManager.notify(NOTIFICATION_ID, builder.build());
