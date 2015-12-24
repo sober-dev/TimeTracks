@@ -21,31 +21,37 @@
         android:id="@+id/activeTaskLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/darker_gray"
         android:orientation="vertical"
         android:padding="10dp"
-        android:visibility="gone"
-        android:background="@android:color/darker_gray">
+        android:visibility="gone">
 
         <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="50dp"
+            android:foreground="?android:attr/selectableItemBackground">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="5dp">
 
                 <TextView
                     android:id="@+id/tvActiveTaskName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:gravity="center_vertical"/>
 
                 <TextView
                     android:id="@+id/tvActiveTrackRunTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3" />
+                    android:layout_weight="1"
+                    android:gravity="right|center_vertical"
+                    android:textSize="18sp"/>
 
             </LinearLayout>
 
@@ -61,7 +67,8 @@
             android:id="@+id/lvItems"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@null" />
+            android:divider="@null"
+            android:listSelector="@android:color/transparent" />
 
         <com.melnykov.fab.FloatingActionButton
             android:id="@+id/fab"
