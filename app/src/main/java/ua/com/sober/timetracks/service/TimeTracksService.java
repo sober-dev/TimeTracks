@@ -27,6 +27,8 @@ public class TimeTracksService extends Service {
     public static final String ACTION_START_OR_STOP_TRACK = "ua.com.sober.timetracks.service.action.START_OR_STOP_TRACK";
 
     private static final int NOTIFICATION_ID = 1;
+    private static final long MIN_RUN_TIME = 0;
+//    private static final long MIN_RUN_TIME = 60000;
 
     private Context context;
     private NotificationManager notificationManager;
@@ -102,7 +104,7 @@ public class TimeTracksService extends Service {
         EventBus.getDefault().post(new TrackStopEvent());
 
 //        Save track in DB
-        if (getTrackRunTime() > 60000) {
+        if (getTrackRunTime() > MIN_RUN_TIME) {
             long trackStopTime = System.currentTimeMillis();
             ContentValues cv = new ContentValues();
             cv.put(ContractClass.TaskTracks.COLUMN_NAME_TASK_ID, taskID);

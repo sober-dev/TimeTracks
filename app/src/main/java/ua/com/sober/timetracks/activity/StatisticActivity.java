@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.PieChartView;
 import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.provider.ContractClass;
+import ua.com.sober.timetracks.util.StatisticsCollector;
 
 /**
  * Created by dmitry.hmel on 18.03.2015.
@@ -47,6 +49,17 @@ public class StatisticActivity extends ActionBarActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
+        }
+
+        Button getStatistic = (Button) findViewById(R.id.getStatistic);
+        if (getStatistic != null) {
+            getStatistic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    StatisticsCollector collector = new StatisticsCollector();
+                    collector.collect(getApplicationContext());
+                }
+            });
         }
     }
 
