@@ -1,8 +1,6 @@
 package ua.com.sober.timetracks.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import lecho.lib.hellocharts.listener.PieChartOnValueSelectListener;
@@ -24,17 +24,20 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.PieChartView;
 import ua.com.sober.timetracks.R;
-import ua.com.sober.timetracks.provider.ContractClass;
+import ua.com.sober.timetracks.adapter.StatisticsAdapter;
 import ua.com.sober.timetracks.util.StatisticsCollector;
 
 /**
  * Created by dmitry.hmel on 18.03.2015.
  */
 public class StatisticActivity extends ActionBarActivity {
+    private ListView lvStatItems;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic);
+        lvStatItems = (ListView) findViewById(R.id.lvStatItems);
 
 //        Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.statisticToolbar);
@@ -61,6 +64,11 @@ public class StatisticActivity extends ActionBarActivity {
                 }
             });
         }
+    }
+
+    public void showStatistics(HashMap<String, String> statistics) {
+        StatisticsAdapter statisticsAdapter = new StatisticsAdapter(statistics);
+        lvStatItems.setAdapter(statisticsAdapter);
     }
 
     @Override

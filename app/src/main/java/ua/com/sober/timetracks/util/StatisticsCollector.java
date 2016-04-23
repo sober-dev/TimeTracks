@@ -7,7 +7,7 @@ import android.util.Log;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -17,7 +17,9 @@ import ua.com.sober.timetracks.provider.ContractClass;
  * Created by Dmitry on 17.03.2016.
  */
 public class StatisticsCollector {
-    private LinkedList<Track> dateTracks = new LinkedList<>();
+    private HashMap<Integer, String> tasks = new HashMap<>();
+    private HashMap<Integer, Long> statistic = new HashMap<>();
+    private LinkedList<Track> tracks = new LinkedList<>();
 
     class Track {
         private int trackID;
@@ -36,7 +38,7 @@ public class StatisticsCollector {
 
         @Override
         public String toString() {
-            return "trackID: " + trackID + "; taskID: " + taskID + "; trackRunTime: " + trackRunTime;
+            return "trackID: " + trackID + "; taskID: " + taskID + "; Run: " + TimeConversion.getTimeStringFromMilliseconds(trackRunTime, TimeConversion.HMS);
         }
 
         public int getTrackID() {
@@ -60,6 +62,15 @@ public class StatisticsCollector {
         }
     }
 
+    private void statisticsCounting() {
+        for (Integer key : tasks.keySet()) {
+            statistic.put(key, 0L);
+        }
+        for (Track track : tracks) {
+            statistic.put(track.getTaskID(), statistic.get(track.getTaskID()) + track.trackRunTime);
+        }
+    }
+
     public void collect(Context context) {
         int trackID;
         int taskID;
@@ -72,10 +83,14 @@ public class StatisticsCollector {
         long startOfDay;
         long endOfDay;
 
-        Cursor cursor = context.getContentResolver().query(ContractClass.TaskTracks.CONTENT_URI, null, null, null, null);
-        if ((cursor.moveToFirst()) || cursor.getCount() != 0) {
-            while (cursor.moveToNext()) {
+        fillTasks(context);
 
+        Cursor cursor = context.getContentResolver().query(ContractClass.TaskTracks.CONTENT_URI, null, null, null, null);
+        if (cursor == null) {
+            return;
+        }
+        try {
+            while (cursor.moveToNext()) {
                 trackID = cursor.getInt(cursor.getColumnIndex(ContractClass.TaskTracks._ID));
                 taskID = cursor.getInt(cursor.getColumnIndex(ContractClass.TaskTracks.COLUMN_NAME_TASK_ID));
                 startTime = cursor.getLong(cursor.getColumnIndex(ContractClass.TaskTracks.COLUMN_NAME_START_TIME));
@@ -85,30 +100,54 @@ public class StatisticsCollector {
                 stopDate = new LocalDate(stopTime);
 
                 if (startDate.isEqual(stopDate)) {
-                    dateTracks.add(new Track(trackID, taskID, startTime, stopTime));
+                    tracks.add(new Track(trackID, taskID, startTime, stopTime));
                 } else {
                     trackDate = stopDate;
                     startOfDay = trackDate.toDateTimeAtStartOfDay().getMillis();
-                    dateTracks.add(new Track(trackID, taskID, startOfDay, stopTime));
+                    tracks.add(new Track(trackID, taskID, startOfDay, stopTime));
 
                     while (!(trackDate.isEqual(startDate))) {
-                        trackDate.minusDays(1);
+                        trackDate = trackDate.minusDays(1);
                         if (trackDate.isEqual(startDate)) {
                             endOfDay = trackDate.toDateTime(new LocalTime(23, 59, 59, 999)).getMillis();
-                            dateTracks.add(new Track(trackID, taskID, startTime, endOfDay));
+                            tracks.add(new Track(trackID, taskID, startTime, endOfDay));
                         } else {
                             startOfDay = trackDate.toDateTimeAtStartOfDay().getMillis();
                             endOfDay = trackDate.toDateTime(new LocalTime(23, 59, 59, 999)).getMillis();
-                            dateTracks.add(new Track(trackID, taskID, startOfDay, endOfDay));
+                            tracks.add(new Track(trackID, taskID, startOfDay, endOfDay));
                         }
                     }
                 }
             }
+        } finally {
             cursor.close();
-        } else cursor.close();
+        }
 
-        for (Track track : dateTracks) {
+        statisticsCounting();
+
+        for (Track track : tracks) {
             Log.i("Test", track.toString());
+        }
+
+        for (Map.Entry<Integer, Long> pair : statistic.entrySet()) {
+            String taskName = tasks.get(pair.getKey());
+            Log.i("Statistics", taskName + " - " + TimeConversion.getTimeStringFromMilliseconds(pair.getValue(), TimeConversion.HMS));
+        }
+    }
+
+    private void fillTasks(Context context) {
+        Cursor cursor = context.getContentResolver().query(ContractClass.Tasks.CONTENT_URI, null, null, null, null);
+        if (cursor == null) {
+            return;
+        }
+        try {
+            while (cursor.moveToNext()) {
+                Integer taskID = cursor.getInt(cursor.getColumnIndex(ContractClass.Tasks._ID));
+                String taskName = cursor.getString(cursor.getColumnIndex(ContractClass.Tasks.COLUMN_NAME_TASK_NAME));
+                tasks.put(taskID, taskName);
+            }
+        } finally {
+            cursor.close();
         }
     }
 }
