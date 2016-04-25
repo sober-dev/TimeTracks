@@ -61,6 +61,7 @@ public class StatisticActivity extends ActionBarActivity {
                 public void onClick(View v) {
                     StatisticsCollector collector = new StatisticsCollector();
                     collector.collect(getApplicationContext());
+                    showStatistics(collector.getStatistics());
                 }
             });
         }

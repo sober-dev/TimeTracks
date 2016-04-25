@@ -43,17 +43,15 @@ public class StatisticsAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
-        final View result;
 
         if (convertView == null) {
-            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.statistics_adapter_item, parent, false);
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.statistics_adapter_item, parent, false);
             viewHolder = new ViewHolder();
             viewHolder.tvStatTaskName = (TextView) convertView.findViewById(R.id.tvStatTaskName);
             viewHolder.tvStatTaskTime = (TextView) convertView.findViewById(R.id.tvStatTaskTime);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
-            result = convertView;
         }
 
         Map.Entry<String, String> item = getItem(position);
@@ -61,6 +59,6 @@ public class StatisticsAdapter extends BaseAdapter {
         viewHolder.tvStatTaskName.setText(item.getKey());
         viewHolder.tvStatTaskTime.setText(item.getValue());
 
-        return result;
+        return convertView;
     }
 }

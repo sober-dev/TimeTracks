@@ -62,6 +62,14 @@ public class StatisticsCollector {
         }
     }
 
+    public HashMap<String, String> getStatistics() {
+        HashMap<String, String> result = new HashMap<>();
+        for (Integer key : statistic.keySet()) {
+            result.put(tasks.get(key), TimeConversion.getTimeStringFromMilliseconds(statistic.get(key), TimeConversion.HMS));
+        }
+        return result;
+    }
+
     private void statisticsCounting() {
         for (Integer key : tasks.keySet()) {
             statistic.put(key, 0L);
