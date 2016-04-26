@@ -19,11 +19,6 @@ public class StatisticsAdapter extends BaseAdapter {
         mData.addAll(map.entrySet());
     }
 
-    private static class ViewHolder {
-        public TextView tvStatTaskName;
-        public TextView tvStatTaskTime;
-    }
-
     @Override
     public int getCount() {
         return mData.size();
@@ -60,5 +55,10 @@ public class StatisticsAdapter extends BaseAdapter {
         viewHolder.tvStatTaskTime.setText(item.getValue());
 
         return convertView;
+    }
+
+    private static class ViewHolder {
+        public TextView tvStatTaskName;
+        public TextView tvStatTaskTime;
     }
 }

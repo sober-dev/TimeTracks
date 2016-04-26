@@ -28,12 +28,6 @@
         android:layout_height="match_parent"
         android:layout_weight="1">
 
-        <Button
-            android:id="@+id/getStatistic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Get Statistic" />
-
         <ListView
             android:id="@+id/lvStatItems"
             android:layout_width="wrap_content"

@@ -2,13 +2,16 @@ package ua.com.sober.timetracks.util;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import ua.com.sober.timetracks.provider.ContractClass;
@@ -62,21 +65,22 @@ public class StatisticsCollector {
         }
     }
 
-    public HashMap<String, String> getStatistics() {
-        HashMap<String, String> result = new HashMap<>();
+    public HashMap<String, Long> getStatistics() {
+        HashMap<String, Long> result = new LinkedHashMap<>();
+        statistic = (HashMap<Integer, Long>) sortByValue(statistic);
         for (Integer key : statistic.keySet()) {
-            result.put(tasks.get(key), TimeConversion.getTimeStringFromMilliseconds(statistic.get(key), TimeConversion.HMS));
+            result.put(tasks.get(key), statistic.get(key));
         }
         return result;
     }
 
-    private void statisticsCounting() {
-        for (Integer key : tasks.keySet()) {
-            statistic.put(key, 0L);
+    public HashMap<String, String> getStringStatistics() {
+        HashMap<String, String> result = new LinkedHashMap<>();
+        statistic = (HashMap<Integer, Long>) sortByValue(statistic);
+        for (Integer key : statistic.keySet()) {
+            result.put(tasks.get(key), TimeConversion.getTimeStringFromMilliseconds(statistic.get(key), TimeConversion.HMS));
         }
-        for (Track track : tracks) {
-            statistic.put(track.getTaskID(), statistic.get(track.getTaskID()) + track.trackRunTime);
-        }
+        return result;
     }
 
     public void collect(Context context) {
@@ -133,13 +137,39 @@ public class StatisticsCollector {
 
         statisticsCounting();
 
-        for (Track track : tracks) {
-            Log.i("Test", track.toString());
-        }
+//        for (Track track : tracks) {
+//            Log.i("Test", track.toString());
+//        }
+//
+//        for (Map.Entry<Integer, Long> pair : statistic.entrySet()) {
+//            String taskName = tasks.get(pair.getKey());
+//            Log.i("Statistics", taskName + " - " + TimeConversion.getTimeStringFromMilliseconds(pair.getValue(), TimeConversion.HMS));
+//        }
+    }
 
-        for (Map.Entry<Integer, Long> pair : statistic.entrySet()) {
-            String taskName = tasks.get(pair.getKey());
-            Log.i("Statistics", taskName + " - " + TimeConversion.getTimeStringFromMilliseconds(pair.getValue(), TimeConversion.HMS));
+    private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
+            @Override
+            public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+
+        Map<K, V> result = new LinkedHashMap<>();
+        Collections.reverse(list);
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+
+    private void statisticsCounting() {
+        for (Integer key : tasks.keySet()) {
+            statistic.put(key, 0L);
+        }
+        for (Track track : tracks) {
+            statistic.put(track.getTaskID(), statistic.get(track.getTaskID()) + track.trackRunTime);
         }
     }
 

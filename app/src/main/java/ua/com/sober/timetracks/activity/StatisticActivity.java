@@ -9,7 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -26,64 +25,14 @@ import lecho.lib.hellocharts.view.PieChartView;
 import ua.com.sober.timetracks.R;
 import ua.com.sober.timetracks.adapter.StatisticsAdapter;
 import ua.com.sober.timetracks.util.StatisticsCollector;
+import ua.com.sober.timetracks.util.TimeConversion;
 
 /**
  * Created by dmitry.hmel on 18.03.2015.
  */
 public class StatisticActivity extends ActionBarActivity {
     private ListView lvStatItems;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_statistic);
-        lvStatItems = (ListView) findViewById(R.id.lvStatItems);
-
-//        Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.statisticToolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                backToMain();
-            }
-        });
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
-        }
-
-        Button getStatistic = (Button) findViewById(R.id.getStatistic);
-        if (getStatistic != null) {
-            getStatistic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    StatisticsCollector collector = new StatisticsCollector();
-                    collector.collect(getApplicationContext());
-                    showStatistics(collector.getStatistics());
-                }
-            });
-        }
-    }
-
-    public void showStatistics(HashMap<String, String> statistics) {
-        StatisticsAdapter statisticsAdapter = new StatisticsAdapter(statistics);
-        lvStatItems.setAdapter(statisticsAdapter);
-    }
-
-    @Override
-    public void onBackPressed() {
-//        super.onBackPressed();
-        backToMain();
-    }
-
-    private void backToMain() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(intent);
-        finish();
-    }
+    private static StatisticsCollector collector;
 
     /**
      * A fragment containing a pie chart.
@@ -118,11 +67,11 @@ public class StatisticActivity extends ActionBarActivity {
         }
 
         private void generateData() {
-            int numValues = 6;
+            HashMap<String, Long> statistics = collector.getStatistics();
 
             List<SliceValue> values = new ArrayList<>();
-            for (int i = 0; i < numValues; ++i) {
-                SliceValue sliceValue = new SliceValue((float) Math.random() * 30 + 15, ChartUtils.pickColor());
+            for (String key : statistics.keySet()) {
+                SliceValue sliceValue = new SliceValue(statistics.get(key), ChartUtils.pickColor());
                 values.add(sliceValue);
             }
 
@@ -236,7 +185,7 @@ public class StatisticActivity extends ActionBarActivity {
 
             @Override
             public void onValueSelected(int arcIndex, SliceValue value) {
-                Toast.makeText(getActivity(), "Selected: " + value, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), TimeConversion.getTimeStringFromMilliseconds((long) value.getValue(), TimeConversion.HMS), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -248,4 +197,48 @@ public class StatisticActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_statistic);
+        lvStatItems = (ListView) findViewById(R.id.lvStatItems);
+
+//        Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.statisticToolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                backToMain();
+            }
+        });
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
+        }
+
+//        Show Statistics
+        collector = new StatisticsCollector();
+        collector.collect(getApplicationContext());
+        showStatistics(collector.getStringStatistics());
+    }
+
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        backToMain();
+    }
+
+    private void showStatistics(HashMap<String, String> statistics) {
+        StatisticsAdapter statisticsAdapter = new StatisticsAdapter(statistics);
+        lvStatItems.setAdapter(statisticsAdapter);
+    }
+
+    private void backToMain() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+        finish();
+    }
 }
